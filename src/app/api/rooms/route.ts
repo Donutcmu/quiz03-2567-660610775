@@ -34,39 +34,40 @@ export const POST = async (request: NextRequest) => {
     );
   }
   
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: "Invalid token",
-  //   },
-  //   { status: 401 }
-  // );
   const {role} = <User>payload;
+  const body = await request.json();
+  const {roomName} =body;
   readDB();
-  if (role === "ADMIN") {
+  if (role === "ADMIN"||role==="SUPER_ADMIN") {
     return NextResponse.json({
       ok: true,
       // Type casting to "Database"
       enrollments: (<User>DB).role,
     });
   }
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: `Room ${"replace this with room name"} already exists`,
-  //   },
-  //   { status: 400 }
-  // );
+  for(const roomnamee of originalDB.rooms){
+    if(roomnamee.roomName===roomName){
+      return NextResponse.json(
+          {
+            ok: false,
+            message: `Room ${"replace this with room name"} already exists`,
+          },
+          { status: 400 }
+        );
+    }
+  }
+  
+   
 
   const roomId = nanoid();
 
   //call writeDB after modifying Database
-  
+  originalDB.rooms.push(roomName)
   writeDB();
 
   return NextResponse.json({
     ok: true,
-    //roomId,
-    message: `Room ${"replace this with room name"} has been created`,
+    roomId,
+    message: `Room ${roomName} has been created`,
   });
 };
