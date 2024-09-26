@@ -1,23 +1,39 @@
-import { DB, readDB, writeDB } from "@lib/DB";
+import { DB, originalDB, readDB, writeDB } from "@lib/DB";
 import { checkToken } from "@lib/checkToken";
 import { nanoid } from "nanoid";
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 export const GET = async (request: NextRequest) => {
+  const roomId = request.nextUrl.searchParams.get("roomId");
   readDB();
-
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: `Room is not found`,
-  //   },
-  //   { status: 404 }
-  // );
+  const foundRoom = originalDB.rooms.find((r)=>r.roomId===roomId);
+  if(!foundRoom){
+    return NextResponse.json(
+     {
+       ok: false,
+       message: `Room is not found`,
+     },
+     { status: 404 }
+   );
+  }
+  const roommessagelist = [];
+  for(const rm of originalDB.messages){
+    if(rm.roomId===roomId){
+      roommessagelist.push(rm);
+    }
+  }
+  return NextResponse.json(
+    {
+      ok:true,
+      messages:roommessagelist,
+    }
+  )
+   
 };
 
 export const POST = async (request: NextRequest) => {
   readDB();
-
   // return NextResponse.json(
   //   {
   //     ok: false,
@@ -25,6 +41,8 @@ export const POST = async (request: NextRequest) => {
   //   },
   //   { status: 404 }
   // );
+  
+
 
   const messageId = nanoid();
 
