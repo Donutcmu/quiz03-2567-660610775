@@ -1,8 +1,8 @@
-import { DB, originalDB, readDB, writeDB } from "@lib/DB";
+import {  originalDB, readDB, writeDB } from "@lib/DB";
 import { checkToken } from "@lib/checkToken";
 import { nanoid } from "nanoid";
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
+//import { headers } from "next/headers";
 
 export const GET = async (request: NextRequest) => {
   const roomId = request.nextUrl.searchParams.get("roomId");
@@ -34,7 +34,7 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
   const body = await request.json();
-  const {roomId,messageText} =body;
+  const {roomId} =body;
   readDB();
   const foundRoomId = originalDB.rooms.find((r)=>r.roomId===roomId);
   if(!foundRoomId){
@@ -58,8 +58,8 @@ export const POST = async (request: NextRequest) => {
   });
 };
 
-export const DELETE = async (request: NextRequest) => {
-  const payload = checkToken();
+export const DELETE = async () => {
+  //const payload = checkToken();
 
   // return NextResponse.json(
   //   {
